@@ -126,6 +126,9 @@ def validate_message_edit_payload(
         f"{RESOLVED_TOPIC_PREFIX}{Message.EMPTY_TOPIC_FALLBACK_NAME}",
     }:
         raise JsonableError(_("General chat cannot be marked as resolved"))
+    
+    if topic_name == "(no topic)" and message.realm.mandatory_topics:
+        raise JsonableError(_("Topics are required in this organization."))
 
     if topic_name is not None:
         check_stream_topic(topic_name)
