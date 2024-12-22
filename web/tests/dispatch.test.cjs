@@ -121,6 +121,7 @@ message_lists.current = {
         get_messages_sent_by_user: () => [],
         filter: new Filter([]),
     },
+    selected_message() {},
 };
 const cached_message_list = {
     get_row: noop,
