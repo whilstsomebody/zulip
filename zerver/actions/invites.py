@@ -387,6 +387,30 @@ def do_get_invites_controlled_by_user(user_profile: UserProfile) -> list[dict[st
 
 
 @transaction.atomic(durable=True)
+def do_edit_multiuse_invite_link(
+    multiuse_invite: MultiuseInvite,
+    invited_as: int | None,
+    streams: Collection[Stream] | None,
+    include_realm_default_subscriptions: bool | None,
+    welcome_message_custom_text: str | None = None,
+) -> None:
+    # The `streams` and `invited_as` fields of a `multiuse_invite` can be edited
+    # and welcome_message_custom_text can be set anytime while editng the above fields.
+    if streams is not None:
+        multiuse_invite.streams.set(streams)
+    if invited_as is not None:
+        multiuse_invite.invited_as = invited_as
+    if include_realm_default_subscriptions is not None:
+        multiuse_invite.include_realm_default_subscriptions = include_realm_default_subscriptions
+    if welcome_message_custom_text is not None:
+        multiuse_invite.welcome_message_custom_text = welcome_message_custom_text
+    multiuse_invite.save()
+
+    realm = multiuse_invite.referred_by.realm
+    notify_invites_changed(realm, changed_invite_referrer=multiuse_invite.referred_by)
+
+
+@transaction.atomic(durable=True)
 def do_create_multiuse_invite_link(
     referred_by: UserProfile,
     invited_as: int,
