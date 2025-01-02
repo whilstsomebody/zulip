@@ -12,6 +12,7 @@ import {realm} from "./state_data.ts";
 import * as stream_data from "./stream_data.ts";
 import * as unread from "./unread.ts";
 import type {FullUnreadCountsData} from "./unread.ts";
+import * as util from "./util.ts";
 
 export let unread_count = 0;
 let pm_count = 0;
@@ -55,7 +56,7 @@ export function compute_narrow_title(filter?: Filter): string {
         const user_ids = people.emails_strings_to_user_ids_string(emails);
 
         if (user_ids !== undefined) {
-            return people.get_recipients(user_ids);
+            return util.join_using_international_formatter(people.get_recipients(user_ids), true);
         }
         if (emails.includes(",")) {
             return $t({defaultMessage: "Invalid users"});
