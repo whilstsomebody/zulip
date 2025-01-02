@@ -6,6 +6,7 @@ import * as typeahead from "../shared/src/typeahead.ts";
 import {$t} from "./i18n.ts";
 import * as pygments_data from "./pygments_data.ts";
 import type {realm_playground_schema} from "./state_data.ts";
+import * as util from "./util.ts";
 
 export type RealmPlayground = z.output<typeof realm_playground_schema>;
 
@@ -87,7 +88,8 @@ export function get_pygments_typeahead_list_for_settings(query: string): Map<str
     }
 
     for (const [key, values] of map_pygments_pretty_name_to_aliases) {
-        language_labels.set(key, key + " (" + values.join(", ") + ")");
+        const formatted_string = util.join_using_international_formatter(values, false);
+        language_labels.set(key, key + " (" + formatted_string + ")");
     }
 
     return language_labels;
