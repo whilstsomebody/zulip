@@ -537,7 +537,6 @@ export function show_user_profile(user: User, default_tab_key = "profile-tab"): 
     original_values = {
         user_id: user.user_id.toString(),
     };
-    const user_streams = stream_data.get_streams_for_user(user.user_id).subscribed;
     // We only show the subscribe widget if the user is an admin, the user has opened their own profile,
     // or if the user profile belongs to a bot whose owner has opened the user profile. However, we don't
     // want to show the subscribe widget for generic bots since they are system bots and for deactivated users.
@@ -546,7 +545,6 @@ export function show_user_profile(user: User, default_tab_key = "profile-tab"): 
         (people.can_admin_user(user) || settings_data.user_can_subscribe_other_users()) &&
         !user.is_system_bot &&
         people.is_person_active(user.user_id);
-    const groups_of_user = user_groups.get_user_groups_of_user(user.user_id);
     // We currently have the main UI for editing your own profile in
     // settings, so can_manage_profile is artificially false for those.
     const can_manage_profile =
@@ -589,6 +587,16 @@ export function show_user_profile(user: User, default_tab_key = "profile-tab"): 
     }
 
     $("#user-profile-modal-holder").html(render_user_profile_modal(args));
+    initialize_user_type_fields(user);
+    if (show_user_subscribe_widget) {
+        render_user_profile_subscribe_widget();
+        reset_subscribe_widget();
+    }
+    const user_streams = stream_data.get_streams_for_user(user.user_id).subscribed;
+    render_user_stream_list(user_streams, user);
+    const groups_of_user = user_groups.get_user_groups_of_user(user.user_id);
+    render_user_group_list(groups_of_user, user);
+
     modals.open("user-profile-modal", {autoremove: true, on_hide: on_user_profile_hide});
     $(".tabcontent").hide();
     $("#user-profile-modal .dialog_submit_button").prop("disabled", true);
@@ -617,23 +625,9 @@ export function show_user_profile(user: User, default_tab_key = "profile-tab"): 
             $("#user-profile-modal .manage-profile-tab-footer").removeClass(
                 "modal__footer_wrapper",
             );
-            switch (key) {
-                case "profile-tab":
-                    initialize_user_type_fields(user);
-                    break;
-                case "user-profile-groups-tab":
-                    render_user_group_list(groups_of_user, user);
-                    break;
-                case "user-profile-streams-tab":
-                    if (show_user_subscribe_widget) {
-                        render_user_profile_subscribe_widget();
-                    }
-                    render_user_stream_list(user_streams, user);
-                    break;
-                case "manage-profile-tab":
-                    $("#user-profile-modal .modal__footer").show();
-                    render_manage_profile_content(user);
-                    break;
+            if (key === "manage-profile-tab") {
+                $("#user-profile-modal .modal__footer").show();
+                render_manage_profile_content(user);
             }
             setTimeout(() => {
                 $(".modal__container .ind-tab").attr("tabindex", "-1");
