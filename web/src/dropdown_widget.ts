@@ -404,7 +404,10 @@ export class DropdownWidget {
                 // Set focus on first element when dropdown opens.
                 setTimeout(() => {
                     if (this.hide_search_box) {
-                        $dropdown_list_body.find(".list-item:first-child").trigger("focus");
+                        const $selectedItem = $dropdown_list_body.find(
+                            `.list-item[data-unique-id="${this.current_value}"]`,
+                        );
+                        $selectedItem.addClass("active").trigger("focus");
                     } else {
                         $search_input.trigger("focus");
                     }
