@@ -228,12 +228,21 @@ export class DropdownWidget {
     }
 
     setup(): void {
+        let opened_by_keyboard: boolean;
         this.init();
         const delegate_container = util.the(this.$events_container);
 
         if (this.disable_for_spectators && page_params.is_spectator) {
             return;
         }
+
+        $(this.widget_selector).on("mousedown", () => {
+            opened_by_keyboard = false;
+        });
+
+        $(this.widget_selector).on("keydown", () => {
+            opened_by_keyboard = true;
+        });
 
         tippy.delegate(delegate_container, {
             ...popover_menus.default_popover_props,
@@ -401,10 +410,17 @@ export class DropdownWidget {
                     this.item_click_callback(event, instance, this);
                 });
 
-                // Set focus on first element when dropdown opens.
+                const $selected_item = $dropdown_list_body.find(
+                    `.list-item[data-unique-id="${this.current_value}"]`,
+                );
+                $selected_item.addClass("active");
+
+                // Adjust focus based on how the dropdown was opened
                 setTimeout(() => {
                     if (this.hide_search_box) {
-                        $dropdown_list_body.find(".list-item:first-child").trigger("focus");
+                        if (opened_by_keyboard) {
+                            $selected_item.trigger("focus");
+                        }
                     } else {
                         $search_input.trigger("focus");
                     }
