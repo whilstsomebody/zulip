@@ -45,7 +45,7 @@ type ActionPopoverContext = {
     should_display_delete_option: boolean;
     should_display_read_receipts_option: boolean;
     should_display_add_reaction_option: boolean;
-    stream_not_archived: boolean;
+    is_stream_not_archived: boolean;
 };
 
 type TopicPopoverContext = {
@@ -68,7 +68,7 @@ type TopicPopoverContext = {
     url: string;
     visibility_policy: number | false;
     all_visibility_policies: AllVisibilityPolicies;
-    stream_not_archived: boolean;
+    is_stream_not_archived: boolean;
 };
 
 type VisibilityChangePopoverContext = {
@@ -219,7 +219,7 @@ export function get_actions_popover_content_context(message_id: number): ActionP
         not_spectator &&
         !(stream_id && stream_data.is_stream_archived(stream_id));
 
-    const stream_not_archived = !stream_id || !stream_data.is_stream_archived(stream_id);
+    const is_stream_not_archived = !stream_id || !stream_data.is_stream_archived(stream_id);
 
     return {
         message_id: message.id,
@@ -236,7 +236,7 @@ export function get_actions_popover_content_context(message_id: number): ActionP
         should_display_delete_option,
         should_display_read_receipts_option,
         should_display_quote_message,
-        stream_not_archived,
+        is_stream_not_archived,
     };
 }
 
@@ -260,7 +260,7 @@ export function get_topic_popover_content_context({
     const all_visibility_policies = user_topics.all_visibility_policies;
     const is_spectator = page_params.is_spectator;
     const is_topic_empty = is_topic_definitely_empty(stream_id, topic_name);
-    const stream_not_archived = !stream_data.is_stream_archived(stream_id);
+    const is_stream_not_archived = !stream_data.is_stream_archived(stream_id);
     return {
         stream_name: sub.name,
         stream_id: sub.stream_id,
@@ -282,7 +282,7 @@ export function get_topic_popover_content_context({
         url,
         visibility_policy,
         all_visibility_policies,
-        stream_not_archived,
+        is_stream_not_archived,
     };
 }
 
