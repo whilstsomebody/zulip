@@ -359,6 +359,16 @@ export function archive_stream(stream_id: number, $alert_element: JQuery): void 
     });
 }
 
+export function unarchive_stream(stream_id: number, $alert_element: JQuery): void {
+    channel.patch({
+        url: `/json/streams/${stream_id}`,
+        data: {is_archived: false},
+        error(xhr) {
+            ui_report.error($t_html({defaultMessage: "Failed"}), xhr, $alert_element);
+        },
+    });
+}
+
 export function get_stream_email_address(flags: string[], address: string): string {
     const clean_address = address
         .replace(".show-sender", "")
@@ -743,6 +753,39 @@ export function initialize(): void {
             help_link: "/help/archive-a-channel",
             html_body,
             on_click: do_archive_stream,
+        });
+
+        $(".dialog_submit_button").attr("data-stream-id", stream_id);
+    });
+
+    $("#channels_overlay_container").on("click", ".reactivate", function (this: HTMLElement, e) {
+        e.preventDefault();
+        e.stopPropagation();
+
+        function do_unarchive_stream(): void {
+            const stream_id = Number($(".dialog_submit_button").attr("data-stream-id"));
+            unarchive_stream(stream_id, $(".stream_change_property_info"));
+        }
+
+        const stream_id = get_stream_id(this);
+        const stream = sub_store.get(stream_id);
+
+        const stream_name_with_privacy_symbol_html = render_inline_decorated_stream_name({stream});
+
+        const html_body = render_settings_deactivation_or_reactivation_stream_modal({
+            stream_name_with_privacy_symbol_html,
+            is_archived: true,
+        });
+
+        confirm_dialog.launch({
+            html_heading: $t_html(
+                {defaultMessage: "Unarchive <z-link></z-link>?"},
+                {"z-link": () => stream_name_with_privacy_symbol_html},
+            ),
+            id: "unarchive-stream-modal",
+            help_link: "/help/archive-a-channel",
+            html_body,
+            on_click: do_unarchive_stream,
         });
 
         $(".dialog_submit_button").attr("data-stream-id", stream_id);
