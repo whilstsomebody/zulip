@@ -4,7 +4,7 @@ import assert from "minimalistic-assert";
 import type * as tippy from "tippy.js";
 import {z} from "zod";
 
-import render_settings_deactivation_stream_modal from "../templates/confirm_dialog/confirm_deactivate_stream.hbs";
+import render_settings_deactivation_or_reactivation_stream_modal from "../templates/confirm_dialog/confirm_deactivate_or_reactivate_stream.hbs";
 import render_inline_decorated_stream_name from "../templates/inline_decorated_stream_name.hbs";
 import render_change_stream_info_modal from "../templates/stream_settings/change_stream_info_modal.hbs";
 import render_confirm_stream_privacy_change_modal from "../templates/stream_settings/confirm_stream_privacy_change_modal.hbs";
@@ -725,12 +725,13 @@ export function initialize(): void {
             is_signup_announcements_stream ||
             is_zulip_update_announcements_stream;
 
-        const html_body = render_settings_deactivation_stream_modal({
+        const html_body = render_settings_deactivation_or_reactivation_stream_modal({
             stream_name_with_privacy_symbol_html,
             is_new_stream_announcements_stream,
             is_signup_announcements_stream,
             is_zulip_update_announcements_stream,
             is_announcement_stream,
+            is_archived: false,
         });
 
         confirm_dialog.launch({
