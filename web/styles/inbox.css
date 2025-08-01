@@ -335,6 +335,34 @@
             }
         }
 
+        .inbox-collapsed-note {
+            overflow: hidden;
+            max-width: calc(
+                var(--width-inbox-search) +
+                    var(--width-inbox-filters-dropdown) + 0.25em
+            );
+
+            .inbox-collapsed-note-and-button-wrapper {
+                display: flex;
+                flex-direction: row;
+                align-items: center;
+                justify-content: space-between;
+                padding: 10px;
+
+                .inbox-collpased-note-span {
+                    opacity: 0.6;
+                    font-size: 1em;
+                    overflow: hidden;
+                    width: 80%;
+                    word-wrap: normal;
+                }
+
+                #inbox-expand-all-button {
+                    height: 80%;
+                }
+            }
+        }
+
         .inbox-right-part-wrapper {
             display: flex;
             align-items: center;
